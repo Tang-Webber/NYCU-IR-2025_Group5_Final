@@ -2,13 +2,13 @@
 
 本專案為資訊檢索與擷取 Generative Information Retrieval 課程期末Project。我們實作了一個基於 **Visual RAG (Retrieval-Augmented Generation)** 的地理定位系統。系統結合了視覺檢索模型 (CLIP / GeoCLIP) 與大型語言模型 (Google Gemini)，透過檢索相似圖片作為上下文，輔助 LLM 進行更精準的地理位置推論。
 
-## 專案架構
+## Project Structure
 
 - **`ir_final.py`**: 主要執行檔。包含資料前處理、索引建置 (Indexing)、檢索 (Retrieval) 及 LLM 生成 (Generation) 的完整流程。
 - **`geolocation-geoguessr-images-50k/`**: (需自行建立) 存放測試圖片與 Knowledge Base 圖片的資料夾。
 - **`checkpoints/`**: 存放 GeoCLIP 或其他模型權重的目錄。
 
-## 核心技術
+## Core Technologies
 
 本系統採用 `UnifiedGeoRAG` 架構，整合以下技術：
 
@@ -23,7 +23,7 @@
       - **Gemini 2.5 Flash Image** 
     * **Strategy**: 將檢索到的 Top-K 相似圖片及其 metadata (經緯度、地點描述) 作為 Prompt Context，引導 LLM 進行多模態推理，輸出預測地點。
 
-## 資料集
+## Dataset
 
 - **來源**: GeoGuessr 街景截圖資料集 (~50,000 張圖片，涵蓋 150+ 國家)
 - **資料分割**: 
@@ -31,14 +31,14 @@
   - Test Set: 10% (實驗中使用 50 個樣本)
 - **標註**: 每張圖片標註所屬國家及該國中心點經緯度
 
-## 環境安裝
+## Environment Setup
 
-### 1. 前置需求
+### 1. Prerequisites
 * Python 3.8+
 * CUDA 支援 (建議使用 NVIDIA GPU 以加速 Embedding 計算與 FAISS 檢索)
 * Google Gemini API Key
 
-### 2. 安裝套件
+### 2. Install Packages
 請執行以下指令安裝所需套件：
 
 ```bash
@@ -47,25 +47,25 @@ pip install -r requirements.txt
 
 **注意**：`faiss-gpu` 僅適用於 Linux/Windows 的 NVIDIA GPU 環境。若使用 MacOS 或無 GPU，請將 requirements.txt 中的 `faiss-gpu` 改為 `faiss-cpu`。
 
-### 3. 主要套件
+### 3. Main Packages
 - `torch`, `clip`, `faiss-gpu`
 - `google-generativeai` (Gemini API)
 - `geopy`, `Pillow`, `pandas`, `numpy`
 - `geoclip` (選用，用於 GeoCLIP 編碼器)
 
-## 使用說明
+## Usage Instructions
 
-### 1. 設定 API Key
+### 1. Set API Key
 請在環境變數中設定您的 Google API Key，或直接於程式碼中填入：
 
 ```python
 os.environ["GOOGLE_API_KEY"] = "YOUR_API_KEY"
 ```
 
-### 2. 準備資料集
-請確保 GeoGuessr 資料集已下載並放置於指定路徑（預設為 `./geolocation-geoguessr-images-50k`）。
+### 2. Prepare Dataset
+確保 GeoGuessr 資料集已下載並放置於指定路徑（預設為 `./geolocation-geoguessr-images-50k`）。
 
-資料夾結構應為：
+Structure：
 ```
 geolocation-geoguessr-images-50k/
 ├── United States/
@@ -77,7 +77,7 @@ geolocation-geoguessr-images-50k/
 └── ...
 ```
 
-### 3. 執行實驗
+### 3. Run Experiments
 
 ```python
 # 初始化系統 (選擇 CLIP 或 GeoCLIP)
@@ -93,14 +93,14 @@ df_results = run_experiments()
 print_summary_tables(df_results)
 ```
 
-### 4. 實驗模式
+### 4. Experiment Modes
 系統支援三種實驗模式（可在 CONFIG 中切換）：
 
 - **Gemini Only** (`RUN_GEMINI_ONLY`): Zero-shot 地理定位基準測試
 - **KNN** (`RUN_KNN`): 基於向量檢索的 k-NN 分類（支援 Voting / Weighted Average）
 - **RAG** (`RUN_RAG`): 完整 Visual RAG Pipeline（檢索 + LLM 推理）
 
-### 5. 質性分析模式
+### 5. Qualitative Analysis Mode
 除了量化評估，系統還提供旅遊導覽生成功能：
 
 ```python
@@ -112,9 +112,9 @@ run_qualitative_showcase(system, test_data, num_samples=3, k=3)
 - 視覺線索分析（建築、植被、路標等）
 - 旅遊導覽文字（附近景點推薦）
 
-## 系統配置參數
+## System Configuration Parameters
 
-### CONFIG 主要設定
+### Main CONFIG Settings
 
 ```python
 CONFIG = {
@@ -151,7 +151,7 @@ CONFIG = {
 }
 ```
 
-### 編碼器選擇
+### Encoder Selection
 
 系統支援兩種視覺編碼器：
 
@@ -171,7 +171,7 @@ CONFIG = {
    - 捕捉地理特定視覺特徵（植被、建築風格、道路標示等）
    - 需額外安裝: `pip install geoclip`
 
-### FAISS 索引配置
+### FAISS Index Configuration
 
 - **索引類型**: `IndexFlatL2` (精確 L2 距離搜尋)
 - **向量維度**: 
@@ -179,7 +179,7 @@ CONFIG = {
   - GeoCLIP: 模型預設維度
 - **檢索策略**: Top-K 最近鄰搜尋
 
-### 評估指標
+### Evaluation Metrics
 
 系統使用以下指標評估效能：
 
@@ -205,9 +205,9 @@ CONFIG = {
    - Country Level: 750 km
    - Continent Level: 2500 km
 
-## 資料前處理
+## Data Preprocessing
 
-### 圖片載入與座標標註
+### Image Loading and Coordinate Annotation
 
 ```python
 def load_dataset_with_coords(root_path: str) -> List[Dict]:
@@ -229,7 +229,7 @@ def load_dataset_with_coords(root_path: str) -> List[Dict]:
 3. 快取座標結果以加速載入
 4. 每個國家限制載入前 100 張圖片（可調整）
 
-### FAISS 索引建置
+### FAISS Index Building
 
 ```python
 def build_index(self, data_list, batch_size=32):
@@ -248,7 +248,7 @@ def build_index(self, data_list, batch_size=32):
     """
 ```
 
-## 實驗模式說明
+## Experiment Mode Descriptions
 
 ### 1. Gemini Only (Zero-shot Baseline)
 
@@ -329,9 +329,9 @@ run_qualitative_showcase(system, test_data, num_samples=3, k=3)
 - 視覺推理解釋（建築、植被、路標等線索）
 - 旅遊導覽段落（景點介紹、推薦）
 
-## API 呼叫與錯誤處理
+## API Calls and Error Handling
 
-### Gemini API 重試機制
+### Gemini API Retry Mechanism
 
 ```python
 def generate_gemini_response(self, prompt, images):
@@ -346,15 +346,15 @@ def generate_gemini_response(self, prompt, images):
     """
 ```
 
-### Rate Limit 管理
+### Rate Limit Management
 
 - 每次 RAG 呼叫後等待 3 秒
 - Gemini Only 模式每次呼叫後等待 2 秒
 - 429 錯誤觸發指數退避
 
-## 輸出與結果儲存
+## Output and Result Storage
 
-### CSV 結果檔案
+### CSV Result Files
 
 系統自動儲存實驗結果：
 
@@ -372,7 +372,7 @@ full_experiment_results_YYYYMMDD_HHMMSS.csv
 - `Country_Match`: 國家匹配（True/False）
 - `Model_Version`: Gemini 模型版本
 
-### 摘要統計
+### Summary Statistics
 
 ```python
 def print_summary_tables(df):
@@ -384,7 +384,7 @@ def print_summary_tables(df):
     """
 ```
 
-## 程式碼結構
+## Code Structure
 
 ```
 ir_final.py
@@ -412,9 +412,9 @@ ir_final.py
 └── Main Execution
 ```
 
-## 實驗結果
+## Experimental Results
 
-### 主要方法比較
+### Main Method Comparison
 
 | Method | Country Accuracy (%) ↑ | Mean Distance Error (km) ↓ |
 |--------|------------------------|------------------------------|
@@ -424,9 +424,9 @@ ir_final.py
 | Gemini 2.5 (Zero-shot) | 60 | 841.67 |
 | **UnifiedGeoRAG (Ours)** | **64** | **1455.52** |
 
-註：UnifiedGeoRAG 使用 GeoCLIP 編碼器搭配 K=3 檢索配置。完整實驗結果與分析請參見 `Project_Team5_report.pdf`。
+Note: UnifiedGeoRAG uses GeoCLIP encoder with K=3 retrieval configuration. For complete experimental results and analysis, please refer to `Project_Team5_report.pdf`.
 
-## 系統輸出範例
+## System Output Example
 
 ```
 Query Image: [圖片]
@@ -454,14 +454,14 @@ Final Prediction:
 3. **增量學習**: 支援新國家/地區的動態加入，無需重新訓練
 4. **使用者回饋機制**: 整合人類回饋以優化檢索排序
 
-## 團隊成員
+## Team Members
 
 - 413551036 翁祥恩
 - 313551073 顏琦恩
 - 314551058 唐文蔚
 - 314554006 陳乙慈
 
-## 參考文獻
+## References
 
 1. [Img2Loc (SIGIR 2024)](https://arxiv.org/abs/2405.04793) - Geolocation via Retrieval-Augmented Generation
 2. [DQU-CIR (SIGIR 2024)](https://arxiv.org/abs/2405.08706) - CLIP-based Visual Retrieval
