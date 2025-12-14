@@ -412,6 +412,20 @@ ir_final.py
 └── Main Execution
 ```
 
+## 實驗結果
+
+### 主要方法比較
+
+| Method | Country Accuracy (%) ↑ | Mean Distance Error (km) ↓ |
+|--------|------------------------|------------------------------|
+| DenseNet121 (Baseline) | 34.23 | - |
+| KNN w/ CLIP | 34 | 2979.32 |
+| KNN w/ GeoCLIP | 56 | 1311.11 |
+| Gemini 2.5 (Zero-shot) | 60 | 841.67 |
+| **UnifiedGeoRAG (Ours)** | **64** | **1455.52** |
+
+註：UnifiedGeoRAG 使用 GeoCLIP 編碼器搭配 K=3 檢索配置。完整實驗結果與分析請參見 `Project_Team5_report.pdf`。
+
 ## 系統輸出範例
 
 ```
