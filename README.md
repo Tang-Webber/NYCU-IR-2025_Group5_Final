@@ -1,13 +1,12 @@
 # Visual RAG for Geo-localization (IR Final Project)
 
-本專案為資訊檢索 (Information Retrieval) 課程期末專案。我們實作了一個基於 **Visual RAG (Retrieval-Augmented Generation)** 的地理定位系統。系統結合了視覺檢索模型 (CLIP / GeoCLIP) 與大型語言模型 (Google Gemini)，透過檢索相似圖片作為上下文，輔助 LLM 進行更精準的地理位置推論。
+本專案為資訊檢索與擷取 Generative Information Retrieval 課程期末Project。我們實作了一個基於 **Visual RAG (Retrieval-Augmented Generation)** 的地理定位系統。系統結合了視覺檢索模型 (CLIP / GeoCLIP) 與大型語言模型 (Google Gemini)，透過檢索相似圖片作為上下文，輔助 LLM 進行更精準的地理位置推論。
 
 ## 專案架構
 
 - **`ir_final.py`**: 主要執行檔。包含資料前處理、索引建置 (Indexing)、檢索 (Retrieval) 及 LLM 生成 (Generation) 的完整流程。
 - **`geolocation-geoguessr-images-50k/`**: (需自行建立) 存放測試圖片與 Knowledge Base 圖片的資料夾。
 - **`checkpoints/`**: 存放 GeoCLIP 或其他模型權重的目錄。
-- **`Project_Team5_report.pdf`**: 完整實驗報告，包含方法論、實驗設計與結果分析。
 
 ## 核心技術
 
@@ -20,8 +19,8 @@
 
 2.  **Generation (生成器)**:
     * **Models**: 
-      - **Gemini 2.0 Flash Exp** (實驗版本)
-      - **Gemini 2.5 Flash Image** (主要實驗模型)
+      - **Gemini 2.0 Flash Exp** 
+      - **Gemini 2.5 Flash Image** 
     * **Strategy**: 將檢索到的 Top-K 相似圖片及其 metadata (經緯度、地點描述) 作為 Prompt Context，引導 LLM 進行多模態推理，輸出預測地點。
 
 ## 資料集
@@ -230,24 +229,6 @@ def load_dataset_with_coords(root_path: str) -> List[Dict]:
 3. 快取座標結果以加速載入
 4. 每個國家限制載入前 100 張圖片（可調整）
 
-### 圖片編碼
-
-```python
-def encode_image(self, image_path):
-    """
-    統一的圖片編碼介面
-    
-    Processing Steps:
-        1. 載入圖片並轉換為 RGB
-        2. 應用對應編碼器的預處理 (Resize, Normalize)
-        3. 提取視覺特徵向量
-        4. 轉換為 numpy array (float32)
-    
-    Returns:
-        np.ndarray: 正規化的特徵向量
-    """
-```
-
 ### FAISS 索引建置
 
 ```python
@@ -413,7 +394,6 @@ ir_final.py
 ├── UnifiedGeoRAG Class
 │   ├── __init__()
 │   ├── _load_encoder()
-│   ├── encode_image()
 │   ├── build_index()
 │   ├── retrieve()
 │   └── generate_gemini_response()
